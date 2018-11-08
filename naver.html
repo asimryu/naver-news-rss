@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RESTful API</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/start/jquery-ui.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+	<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script>jQuery.noConflict();</script>
+	<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+</head>
+<body>
+	<div class="container" ng-app="newsApp" ng-controller="naverSearch">
+		<div class="jumbotron text-center">
+			<h1>Naver News Search</h1>
+		</div>
+		<div style="margin-bottom: 20px;">
+			<form onsubmit="retrun false;" class="form-inline">
+            	<input id="sch-text" type="text" class="form-control" placeholder="검색...">&nbsp;
+				<a href="#!" class="btn btn-primary" ng-click="newsSearch()">검색</a>
+			</form>
+		</div>
+		<div class="list">
+			<table class="table">
+				<thead class="thead-dark">
+					<tr>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>분류</th>
+						<th>날짜</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="n in newslist">
+						<td><a href="{{ n.link }}">{{ n.title }}</a></td>
+						<td>{{ n.author }}</td>
+						<td>{{ n.category }}</td>
+						<td>{{ n.pubDate }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div id="write-box" style="display: none;">
+		<form onsubmit="return false;">
+			<div class="form-group">
+				<input type="text" id="name" placeholder="이름" class="form-control">
+			</div>
+			<div class="form-group">
+				<input type="text" id="city" placeholder="도시" class="form-control">
+			</div>
+			<div class="form-group">
+				<input type="text" id="phone" placeholder="연락처" class="form-control">
+			</div>
+			<div class="form-group">
+				<input type="text" id="email" placeholder="Email" class="form-control">
+			</div>
+			<a href="#!" class="btn-save btn btn-success"><i class="fas fa-save"></i> 친구등록</a>
+			<a href="#!" class="btn-close btn btn-secondary"><i class="fas fa-times"></i> 닫기</a>
+			<input type="hidden" id="id">
+			<input type="hidden" id="mode">
+		</form>
+	</div>
+
+
+	<script>
+		//angular js repeat
+		var app = angular.module("newsApp",[]);
+		app.controller("naverSearch",function($scope, $http){
+			$scope.newslist = [];
+			$scope.newsSearch = function(){
+				var sch = document.getElementById("sch-text").value;
+				if ( ! sch ) {
+					$scope.newslist = [];
+					return;
+				}
+				$http.get("naver.php?sch=" + sch ).then(function(res){
+					var newsdata = res.data;
+					$scope.newslist = newsdata.channel.item;
+				});				
+			};
+		});
+	</script>
+</body>
+</html>
